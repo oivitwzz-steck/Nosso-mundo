@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nosso Mundinho</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #000;
+      overflow: hidden;
+      color: white;
+    }
+
+    /* Fundo Gradiente */
+    .bg {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(122, 31, 31, 0.6));
+      z-index: -1;
+    }
+
+    /* Efeito de Transição */
+    .fade {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.6s;
+      z-index: 100;
+    }
+
+    /* Estrutura das Páginas */
+    .page {
+      position: fixed;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 25px;
+      text-align: center;
+      opacity: 0;
+      transform: scale(1.08);
+      transition: 0.8s ease;
+      pointer-events: none; /* Impede cliques em páginas invisíveis */
+      visibility: hidden;
+    }
+
+    .page.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto; /* Ativa cliques apenas na página visível */
+      visibility: visible;
+    }
+
+    h1 { font-family: 'Playfair Display', serif; font-size: 32px; margin-bottom: 20px; }
+    h2 { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 20px; }
+
+    /* Estilo Dark da Caixa de Texto */
+    .box {
+      background: rgba(0, 0, 0, 0.85);
+      color: #ffffff;
+      padding: 25px;
+      border-radius: 20px;
+      max-width: 900px;
+      max-height: 60vh;
+      overflow: auto;
+      text-align: left;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      line-height: 1.6;
+    }
+
+    /* Botões Personalizados */
+    button {
+      margin-top: 25px;
+      padding: 12px 35px;
+      border: none;
+      border-radius: 40px;
+      background: white;
+      color: #7a1f1f;
+      font-weight: 600;
+      letter-spacing: 1px;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    button:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(255,255,255,0.2); }
+    button:active { transform: scale(0.95); }
+
+    /* Botão de Música */
+    .music-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: white;
+      color: #7a1f1f;
+      border: none;
+      border-radius: 30px;
+      padding: 8px 15px;
+      font-size: 12px;
+      z-index: 200;
+    }
+
+    /* Galeria de Fotos */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      width: 100%;
+      max-height: 60vh;
+      overflow: auto;
+      padding: 10px;
+    }
+
+    .gallery img {
+      width: 100%;
+      border-radius: 12px;
+      object-fit: cover;
+      transition: 0.3s;
+    }
+
+    /* Animação de Corações */
+    .heart {
+      position: fixed;
+      color: #ff4d6d;
+      animation: fall linear infinite;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-10vh); }
+      100% { transform: translateY(110vh); }
+    }
+
+    .big-love { font-size: 40px; margin-top: 20px; font-family: 'Playfair Display', serif; }
+
+    /* Tela de Senha */
+    #passwordScreen {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+      color: white;
+      text-align: center;
+      z-index: 999;
+    }
+
+    #passwordScreen input {
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #7a1f1f;
+      margin-top: 15px;
+      width: 220px;
+      text-align: center;
+      background: #111;
+      color: white;
+    }
+
+    #passMsg { margin-top: 15px; color: #ff4d6d; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <div id="passwordScreen">
+    <h1>Digite a data do nosso início</h1>
+    <p>(Formato: DD/MM/AAAA)</p>
+    <input type="password" id="passInput" placeholder="00/00/0000">
+    <button onclick="checkPassword()">Acessar Mundinho</button>
+    <p id="passMsg"></p>
+  </div>
+
+  <div id="mainContent" style="display:none;">
+    <div class="bg"></div>
+    <div class="fade" id="fade"></div>
+
+    <button class="music-btn" onclick="toggleMusic()">🎵 Música</button>
+    <audio id="music" loop>
+      <source src="https://files.catbox.moe/6xi33i.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="page active" id="p1">
+      <h1>Nosso Mundinho ❤️</h1>
+      <p>Uma pequena parte do que eu sinto por você…</p>
+      <button onclick="startExperience()">Começar</button>
+    </div>
+
+    <div class="page" id="p2">
+      <h2>Sobre nós</h2>
+      <div class="box">
+        Mano, eu tava aqui agora mesmo pensando na gente, lembrando de como tudo começou e ao mesmo tempo vivendo tudo isso que a gente tá vivendo hoje. É doido porque eu ainda sinto aquela mesma sensação do começo, aquele friozinho, aquela ansiedade boa de te ver, de receber sua mensagem, de ouvir sua voz. Parece que eu tô vivendo o início de novo, só que agora mais intenso, mais maduro, mais forte. Eu lembro de como era lá no começo, tudo novidade, tudo perfeito, cada detalhe seu me encantando, cada risada sua ficando na minha cabeça o dia inteiro. Eu sentia que você era diferente, que tinha alguma coisa em você que me prendia de um jeito que eu não sabia explicar. E hoje, vivendo o agora com você, eu vejo que aquela sensação nunca foi embora, ela só cresceu. Eu ainda olho pra você e penso “caraca, é ela”. Só que agora eu penso isso com mais certeza ainda. Hoje não é só emoção, não é só aquele brilho do começo, é escolha, é construção, é sentimento firme. A gente já passou por coisa difícil, já teve medo de se perder, já sentiu saudade mesmo estando perto, e mesmo assim a gente tá aqui, mais forte. Eu sinto saudade do começo porque era tudo perfeito, mas ao mesmo tempo eu olho pro agora e vejo que tá muito mais incrível. Porque hoje eu conheço seus jeitos, suas manias, seus defeitos, suas qualidades, e amo cada parte. Hoje eu sei como você fica quando tá brava, como você fica quando tá com vergonha, como você sorri quando tá feliz de verdade. E isso é muito mais especial do que qualquer início. Cada dia com você fica melhor, cada conversa fica mais profunda, cada abraço parece mais necessário. Ter você hoje é exatamente tudo que eu sempre quis. Não é só uma paixão, é minha parceira, minha melhor amiga, meu amor. Eu amo lembrar de como era, mas amo mais ainda viver o que tá sendo agora, porque o agora é real, é forte, é verdadeiro. E eu tenho certeza que se lá atrás já era especial, hoje é muito mais, porque hoje eu não tô só sentindo, eu tenho certeza.
+      </div>
+      <button onclick="nextPage()">Continuar</button>
+    </div>
+
+    <div class="page" id="p3">
+      <h2>Sobre você</h2>
+      <div class="box">
+        eu nunca sei nem por onde começar quando eu vou falar de você, porque qualquer palavra parece pequena perto do que eu sinto. Eu amo você de um jeito que não é só “gostar muito”, é algo que faz parte de mim, que tá em mim o tempo todo. Você é importante pra mim num nível que às vezes nem eu consigo explicar direito. Seu jeito, sua voz, sua risada, suas manias, tudo em você tem um espaço guardado aqui dentro do meu peito. Eu amo suas qualidades, amo o quanto você é forte, o quanto você é intensa, o quanto você se importa, o quanto você consegue ser doce e brava ao mesmo tempo. Eu amo quando você implica comigo, amo quando você faz drama, amo quando você fica toda bobinha, amo quando você tenta esconder que tá com ciúmes, amo quando você ri de verdade. Eu amo até seus defeitos, porque eles fazem você ser quem você é. Amo quando você é teimosa, quando você insiste nas coisas, quando você fala o que pensa. Eu amo cada detalhe seu, até aqueles que você acha que não são tão bonitos assim. Pra mim, você é perfeita do seu jeito, completa, real, verdadeira. Você é importante porque você mudou meu jeito de ver muita coisa, você me fez amadurecer, me fez sentir coisas que eu nunca tinha sentido antes. Quando eu penso no meu dia, automaticamente eu penso em você. Quando algo acontece comigo, é você que eu quero contar primeiro. Quando eu tô mal, é você que eu quero perto. Você não é só minha namorada, você é minha pessoa. Eu amo estar com você, amo conversar com você, amo dividir minha vida com você. E eu quero que você nunca duvide do quanto você é especial pra mim. Porque você é única, você é rara, você é tudo que eu sempre pedi pra Deus. Eu amo você por inteira, sem tirar nem pôr, com qualidades, com defeitos, com fases boas e fases difíceis. Eu amo você do jeito que você é, e isso não vai mudar.
+      </div>
+      <button onclick="nextPage()">Nossas Fotos</button>
+    </div>
+
+    <div class="page" id="p4">
+      <h2>Nossos Momentos 📸</h2>
+      <div class="gallery">
+        <img src="https://i.imgur.com/HesxduD.jpeg"> <img src="https://i.imgur.com/0iEtGJi.jpeg">
+        <img src="https://i.imgur.com/Os9HbNh.jpeg"> <img src="https://i.imgur.com/EmygTZF.jpeg">
+        <img src="https://i.imgur.com/JGTQsQe.jpeg"> <img src="https://i.imgur.com/jl9A3Ei.jpeg">
+        <img src="https://i.imgur.com/70OYBPk.jpeg"> <img src="https://i.imgur.com/ZPu0vD4.jpeg">
+        <img src="https://i.imgur.com/BMoSVnb.jpeg"> <img src="https://i.imgur.com/mIQrOhN.jpeg">
+        <img src="https://i.imgur.com/juxdXLo.jpeg"> <img src="https://i.imgur.com/DHKrhWE.jpeg">
+        <img src="https://i.imgur.com/9E5B48b.jpeg"> <img src="https://i.imgur.com/m5vzUzn.jpeg">
+        <img src="https://i.imgur.com/9x6UEbA.jpeg"> <img src="https://i.imgur.com/utMMqcQ.jpeg">
+        <img src="https://i.imgur.com/lYKRfqf.jpeg"> <img src="https://i.imgur.com/UtGoc3D.jpeg">
+        <img src="https://i.imgur.com/2XJTubK.jpeg"> <img src="https://i.imgur.com/x0Zjxd5.jpeg">
+        <img src="https://i.imgur.com/KehJJs5.jpeg"> <img src="https://i.imgur.com/2oMGk6D.jpeg">
+        <img src="https://i.imgur.com/jG3VPTB.jpeg"> <img src="https://i.imgur.com/M4QDblE.jpeg">
+        <img src="https://i.imgur.com/pYf8d1Y.jpeg"> <img src="https://i.imgur.com/N4iUhE9.jpeg">
+      </div>
+      <button onclick="nextPage()">Final</button>
+    </div>
+
+    <div class="page" id="p5">
+      <h2>Estamos juntos há:</h2>
+      <h1 id="contador"></h1>
+      <div class="big-love">EU TE AMO ❤️</div>
+    </div>
+  </div>
+
+  <script>
+    // ==== VERIFICAÇÃO DE SENHA ====
+    function checkPassword() {
+      const input = document.getElementById("passInput").value;
+      const msg = document.getElementById("passMsg");
+      if (input === "30/08/2025") {
+        document.getElementById("passwordScreen").style.display = "none";
+        document.getElementById("mainContent").style.display = "block";
+      } else {
+        msg.innerText = "Senha incorreta 😢 Tente novamente.";
+      }
+    }
+
+    // ==== NAVEGAÇÃO ====
+    let current = 1;
+    function startExperience() {
+      fadeTransition(() => {
+        nextPage();
+        fadeInMusic();
+      });
+    }
+
+    function nextPage() {
+      const currentPage = document.getElementById("p" + current);
+      if (currentPage) currentPage.classList.remove("active");
+      current++;
+      const nextPage = document.getElementById("p" + current);
+      if (nextPage) {
+        nextPage.classList.add("active");
+        if (current === 5) {
+          updateCounter();
+          createHearts();
+        }
+      }
+    }
+
+    function fadeTransition(callback) {
+      let fade = document.getElementById("fade");
+      fade.style.opacity = 1;
+      setTimeout(() => {
+        callback();
+        fade.style.opacity = 0;
+      }, 600);
+    }
+
+    // ==== MÚSICA ====
+    function toggleMusic() {
+      let music = document.getElementById("music");
+      music.paused ? music.play() : music.pause();
+    }
+
+    function fadeInMusic() {
+      let music = document.getElementById("music");
+      music.volume = 0;
+      music.play();
+      let vol = 0;
+      let interval = setInterval(() => {
+        if (vol < 0.8) { vol += 0.05; music.volume = vol; }
+        else { clearInterval(interval); }
+      }, 200);
+    }
+
+    // ==== CONTADOR CORRIGIDO (30/08/2025) ====
+    const startDate = new Date("2025-08-30T00:00:00");
+    function updateCounter() {
+      const now = new Date();
+      const diff = now - startDate;
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      document.getElementById("contador").innerText = days + " dias ❤️";
+    }
+
+    // ==== CHUVA DE CORAÇÕES ====
+    function createHearts() {
+      setInterval(() => {
+        let heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * 100 + "%";
+        heart.style.fontSize = (15 + Math.random() * 25) + "px";
+        heart.style.animationDuration = (4 + Math.random() * 5) + "s";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 8000);
+      }, 400);
+    }
+  </script>
+</body>
+</html>
